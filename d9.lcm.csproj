@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <AssemblyName>lcm</AssemblyName>
+    <RootNamespace>d9.lcm</RootNamespace>
   </PropertyGroup>
 
 </Project>

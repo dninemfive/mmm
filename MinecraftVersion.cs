@@ -1,34 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace d9.lcm;
-public readonly struct MinecraftVersion(string version, string versionType, DateTime date, bool isMajor)
-    : IComparable<MinecraftVersion>
+public record MinecraftVersion
 {
-    public readonly string Version = version;
-    public readonly DateTime ReleaseDate = date;
-
-    public static bool operator ==(MinecraftVersion a, MinecraftVersion b)
-        => a.Version == b.Version && a.ReleaseDate == b.ReleaseDate;
-    public static bool operator !=(MinecraftVersion a, MinecraftVersion b)
-        => !(a == b);
-    public int CompareTo(MinecraftVersion other)
-        => ReleaseDate.CompareTo(other.ReleaseDate);
-    public override bool Equals([NotNullWhen(true)] object? obj)
-        => obj is MinecraftVersion other && this == other;
-    public override int GetHashCode()
-        => HashCode.Combine(Version, ReleaseDate);
-    public static bool operator <(MinecraftVersion a, MinecraftVersion b)
-        => a.CompareTo(b) < 0;
-    public static bool operator <=(MinecraftVersion a, MinecraftVersion b)
-        => a.CompareTo(b) <= 0;
-    public static bool operator >(MinecraftVersion a, MinecraftVersion b)
-        => a.CompareTo(b) > 0;
-    public static bool operator >=(MinecraftVersion a, MinecraftVersion b)
-        => a.CompareTo(b) >= 0;
+    [JsonPropertyName("version")]
+    public required string Name { get; set; }
+    [JsonPropertyName("version_type")]
+    public required MinecraftVersionType VersionType { get; set; }
+    [JsonPropertyName("date")]
+    public required DateTime ReleaseDate { get; set; }
+    [JsonPropertyName("major")]
+    public required bool IsMajorRelease { get; set; }
 }
+public class Iso8601DateJsonConverter : JsonConverter<DateTime>
+{
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => DateTime.ParseExact(reader.GetString()!, "O", CultureInfo.InvariantCulture);
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+        => writer.WriteStringValue(value.ToString("O", CultureInfo.InvariantCulture));
+}
+public enum MinecraftVersionType { Release, Snapshot, Alpha, Beta }
