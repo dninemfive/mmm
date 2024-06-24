@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Modrinth.Net" Version="3.4.5" />
+    <PackageReference Include="NanoByte.SatSolver" Version="0.3.1" />
   </ItemGroup>
 
 </Project>
