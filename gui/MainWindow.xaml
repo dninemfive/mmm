@@ -6,7 +6,17 @@
         xmlns:local="clr-namespace:d9.lcm"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+    <DockPanel>
+        <Button Name="LoadMods" VerticalAlignment="Center" HorizontalAlignment="Center" Click="LoadMods_Click" DockPanel.Dock="Top">Load Mods</Button>
+        <ListView Name="ModList">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Version}" Header="Version" Width="100"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=VersionType}" Header="VersionType" Width="100"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Date}" Header="Date" Width="100"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Major}" Header="Major?" Width="100"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </DockPanel>
 </Window>
