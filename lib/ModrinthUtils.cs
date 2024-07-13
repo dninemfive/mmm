@@ -3,6 +3,7 @@ using Modrinth.Models;
 using Modrinth.Models.Tags;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -37,4 +38,19 @@ public static partial class ModrinthUtils
 
     [GeneratedRegex(@"https:\/\/modrinth\.com\/.+\/(.+)")]
     private static partial Regex GenerateModrinthRegex();
+    public static bool TryGetSlug(this string url, [NotNullWhen(true)]out string? slug)
+    {
+        slug = null;
+        Match match = ModrinthRegex.Match(url);
+        if (match.Success && match.Groups.Values.Any() && match.Groups
+                                                              .Values
+                                                              .Skip(1)
+                                                              .First()
+                                                              .Value is string s)
+        {
+            slug = s;
+            return true;
+        }
+        return false;
+    }
 }

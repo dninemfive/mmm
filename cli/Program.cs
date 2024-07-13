@@ -12,7 +12,7 @@ internal class Program
     private static async Task Main(string[] args)
     {
         string basePath = @"C:\Users\dninemfive\Documents\workspaces\mods\_meta\d9.lcm";
-        DelimitedSpreadsheet<ModDataRow> data = new(File.ReadAllLines($@"{basePath}\moddata.tsv"), "\t");
+        Spreadsheet<ModInputRow> data = File.ReadAllLines($@"{basePath}\moddata.tsv").ToSpreadsheetWithDelimiter<ModInputRow>("\t");
         using FileStream fs = File.OpenWrite($@"{basePath}\output.txt");
         using StreamWriter sw = new(fs);
         ModrinthClientConfig mcc = new()
@@ -23,7 +23,7 @@ internal class Program
         MinecraftVersions = await MinecraftVersions.DownloadUsing(client);
         int updatedCount = 0;
         double totalCount = 0;
-        foreach (ModDataRow row in data)
+        foreach (ModInputRow row in data)
         {
             if (row.Decision < Decision.Considering)
                 continue;
