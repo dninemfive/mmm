@@ -4,6 +4,7 @@ using d9.utl;
 using File = System.IO.File;
 using d9.lcm;
 using System.Text.RegularExpressions;
+using Modrinth.Models.Tags;
 
 internal class Program
 {
@@ -20,15 +21,24 @@ internal class Program
         };
         using ModrinthClient client = new(mcc);
         MinecraftVersions = await MinecraftVersions.DownloadUsing(client);
+        int updatedCount = 0;
         foreach (string row in rows)
         {
             Match match = ModrinthUtils.ModrinthRegex.Match(row);
-            if(match.Success && match.Groups.Values.Any() && match.Groups.Values.Skip(1).First().Value is string slug)
+            if(match.Success && match.Groups.Values.Any() && match.Groups
+                                                                  .Values
+                                                                  .Skip(1)
+                                                                  .First()
+                                                                  .Value is string slug)
             {
                 try
                 {
                     Project project = await client.Project.GetAsync(slug);
-                    string summary = $"{project.Title,-64}\t{project.GameVersions.Where(x => MinecraftVersions[x].Major).InColumnsOfWidth(10)}";
+                    string lastVersion = project.GameVersions.OrderBy(x => MinecraftVersions[x].Date).Last();
+                    bool upToDate = lastVersion == "1.21";
+                    if (upToDate)
+                        updatedCount++;
+                    string summary = $"{project.Title,-64}\t{lastVersion,8}\t{(upToDate ? "TRUE" : "")}";
                     Print(summary);
                 }
                 catch (Exception e)
@@ -41,6 +51,7 @@ internal class Program
                 Print(row);
             }
         }
+        Console.WriteLine($"\nUpdated percentage: {updatedCount / (double)rows.Length:P2}");
     }
     private static void Print(object? obj, StreamWriter? sw = null)
     {
