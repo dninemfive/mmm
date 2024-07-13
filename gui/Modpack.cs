@@ -9,5 +9,4 @@ public record Modpack(string Name, string Loader, IEnumerable<string> ModUrls)
 }
 public record ModpackVersion(Modpack Modpack, string MinecraftVersion)
 {
-    public 
 }

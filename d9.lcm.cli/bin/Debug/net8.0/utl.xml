@@ -1,0 +1,1382 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>utl</name>
+    </assembly>
+    <members>
+        <member name="T:d9.utl.compat.GoogleUtils">
+            <summary>
+            Utilities for authenticating and interfacing with Google services.
+            </summary>
+        </member>
+        <member name="T:d9.utl.compat.GoogleUtils.GoogleAuthConfig">
+            <summary>
+            Configuration class which loads the necessary variables for Google authentication.
+            </summary>
+            <remarks>For more info, see <see href="https://console.cloud.google.com/"/>.</remarks>
+        </member>
+        <member name="M:d9.utl.compat.GoogleUtils.GoogleAuthConfig.IsValid(System.String@)">
+            <summary>
+            Whether or not the <see cref="T:d9.utl.compat.GoogleUtils.GoogleAuthConfig"/> has been fully and correctly loaded.
+            Implements <see cref="T:d9.utl.IValidityCheck"/>. <br/><br/> Specifically, all fields ( <see
+            cref="F:d9.utl.compat.GoogleUtils.GoogleAuthConfig.KeyPath">KeyPath</see>, <see cref="F:d9.utl.compat.GoogleUtils.GoogleAuthConfig.Email">Email</see>, and <see
+            cref="F:d9.utl.compat.GoogleUtils.GoogleAuthConfig.AppName">AppName</see>) must be non- <see langword="null"/>, and <c>KeyPath</c>
+            must point to an existing file.
+            </summary>
+            <param name="reason"><inheritdoc cref="M:d9.utl.IValidityCheck.IsValid(System.String@)" path="/param[@name='reason']"/></param>
+            <returns><inheritdoc cref="M:d9.utl.IValidityCheck.IsValid(System.String@)" path="/returns"/></returns>
+            <remarks>
+            <b>NOTE:</b> does not check whether <c>KeyPath</c> is a valid key, <c>Email</c> is a
+            valid email, or <c>AppName</c> is a valid app name.
+            </remarks>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.GoogleAuthConfig.KeyPath">
+            <summary>
+            The path to a <see href="https://en.wikipedia.org/wiki/PKCS_12">p12</see> file
+            containing the key for the desired Google service.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.GoogleAuthConfig.Email">
+            <summary>
+            The email associated with the service in OAuth. This is not the email for the account
+            which created the service, but rather the one provided when you register your project at
+            <see href="https://console.cloud.google.com/"/>.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.GoogleAuthConfig.AppName">
+            <summary>
+            The name of the application to authenticate with.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils._configPath">
+            <summary>
+            The path to the <see cref="T:d9.utl.compat.GoogleUtils.GoogleAuthConfig">config file</see> for Google authentication,
+            provided via command-line argument.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils._authConfig">
+            <summary>
+            The <see cref="T:d9.utl.compat.GoogleUtils.GoogleAuthConfig"/> loaded from the file, or <see langword="null"/> if it
+            could not be loaded.
+            </summary>
+        </member>
+        <member name="P:d9.utl.compat.GoogleUtils.HasValidAuthConfig">
+            <summary>
+            <see langword="true"/> if the auth config is usable or <see langword="false"/> otherwise.
+            </summary>
+        </member>
+        <member name="M:d9.utl.compat.GoogleUtils.NoValidAuthConfig(System.String,System.String)">
+            <summary>
+            The exception thrown when the <see cref="T:d9.utl.compat.GoogleUtils.GoogleAuthConfig"/> is not <see cref="T:d9.utl.IValidityCheck">valid</see>.
+            </summary>
+        </member>
+        <member name="P:d9.utl.compat.GoogleUtils.Certificate">
+            <summary>
+            Gets the Google Auth certificate from the (privately-stored) key and password files.
+            </summary>
+            <remarks>
+            Largely a copy of code from <see
+            href="https://www.daimto.com/google-drive-authentication-c/">this example</see>. <br/><br/>
+            Apparently the password is always <c>notasecret</c> and that can't be changed, which is strange.
+            </remarks>
+        </member>
+        <member name="M:d9.utl.compat.GoogleUtils.Credential(System.String[])">
+            <summary>
+            Constructs a credential with the specified scopes.
+            </summary>
+            <remarks>
+            Largely a copy of code from <see
+            href="https://www.daimto.com/google-drive-authentication-c/">this example</see>.
+            </remarks>
+            <param name="scopes">
+            The <see href="https://developers.google.com/identity/protocols/oauth2/scopes">Google
+            scopes</see> the credential is permitted to use.
+            </param>
+        </member>
+        <member name="P:d9.utl.compat.GoogleUtils.CalendarService">
+            <summary>
+            Gets a <see
+            href="https://googleapis.dev/dotnet/Google.Apis.Calendar.v3/latest/api/Google.Apis.Calendar.v3.CalendarService.html">
+            calendar service</see> using a <see cref="M:d9.utl.compat.GoogleUtils.Credential(System.String[])">Credential</see> scoped to allow all
+            Calendar operations.
+            </summary>
+        </member>
+        <member name="M:d9.utl.compat.GoogleUtils.AddEventTo(System.String,Google.Apis.Calendar.v3.Data.Event)">
+            <summary>
+            Adds an event to the specified calendar.
+            </summary>
+            <param name="calendarId">The ID of the calendar to which to add the specified event.</param>
+            <param name="newEvent">The event to add to the specified calendar.</param>
+            <returns>The created event.</returns>
+        </member>
+        <member name="M:d9.utl.compat.GoogleUtils.UpdateEvent(System.String,System.String,Google.Apis.Calendar.v3.Data.Event)">
+            <summary>
+            Updates a specified event on a specified calendar.
+            </summary>
+            <param name="calendarId">The ID of the calendar which contains the event to update.</param>
+            <param name="eventId">The ID of the event to update.</param>
+            <param name="newEvent">The event with which to replace the specified event.</param>
+            <returns>The updated event.</returns>
+        </member>
+        <member name="M:d9.utl.compat.GoogleUtils.ToEventDateTime(System.DateTime)">
+            <summary>
+            Converts a normal <see cref="T:System.DateTime"/> to a Google Calendar <see cref="T:Google.Apis.Calendar.v3.Data.EventDateTime"/>.
+            </summary>
+            <param name="dateTime">The <see cref="T:System.DateTime"/> to convert.</param>
+            <returns>An <see cref="T:Google.Apis.Calendar.v3.Data.EventDateTime"/> corresponding to the given <c><paramref name="dateTime"/></c>.</returns>
+        </member>
+        <member name="T:d9.utl.compat.GoogleUtils.EventColor">
+            <summary>
+            The 11 colors available to Google Calendar events.
+            </summary>
+            <remarks>
+            The API returns hex codes which do not match the colors shown in the desktop app; <see
+            href="https://docs.google.com/spreadsheets/d/1M2lyC0jHT3Mj-eA9OPJ2m_JQr1f3qpJVX5a8dNXnDB0/edit?usp=sharing">see
+            this sheet for the exact details</see>.
+            </remarks>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.EventColor.Lavender">
+            <summary>
+            The first hardcoded color for Google Calendar events, hex code <c>#7986cb</c>.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.EventColor.Sage">
+            <summary>
+            The second hardcoded color for Google Calendar events, hex code <c>#33b679</c>.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.EventColor.Grape">
+            <summary>
+            The third hardcoded color for Google Calendar events, hex code <c>#8e24aa</c>.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.EventColor.Flamingo">
+            <summary>
+            The fourth hardcoded color for Google Calendar events, hex code <c>#e67c73</c>.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.EventColor.Banana">
+            <summary>
+            The fifth hardcoded color for Google Calendar events, hex code <c>#f6bf26</c>.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.EventColor.Tangerine">
+            <summary>
+            The sixth hardcoded color for Google Calendar events, hex code <c>#f4511e</c>.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.EventColor.Peacock">
+            <summary>
+            The seventh hardcoded color for Google Calendar events, hex code <c>#039be5</c>.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.EventColor.Graphite">
+            <summary>
+            The eighth hardcoded color for Google Calendar events, hex code <c>#616161</c>.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.EventColor.Blueberry">
+            <summary>
+            The ninth hardcoded color for Google Calendar events, hex code <c>#3f51b5</c>.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.EventColor.Basil">
+            <summary>
+            The tenth hardcoded color for Google Calendar events, hex code <c>#0b8043</c>.
+            </summary>
+        </member>
+        <member name="F:d9.utl.compat.GoogleUtils.EventColor.Tomato">
+            <summary>
+            The eleventh hardcoded color for Google Calendar events, hex code <c>#d50000</c>.
+            </summary>
+        </member>
+        <member name="P:d9.utl.compat.GoogleUtils.DriveService">
+            <summary>
+            Gets a <see
+            href="https://developers.google.com/resources/api-libraries/documentation/drive/v3/csharp/latest/classGoogle_1_1Apis_1_1Drive_1_1v3_1_1DriveService.html">
+            drive service</see> using a <see cref="M:d9.utl.compat.GoogleUtils.Credential(System.String[])">Credential</see> scoped to allow all
+            Drive operations.
+            </summary>
+        </member>
+        <member name="M:d9.utl.compat.GoogleUtils.Download(System.String,System.String,System.String)">
+            <summary>
+            Attempts to download a file from a Drive URL to the <paramref name="filePath">specified
+            path</paramref> and prints whether or not it was successful, as well as the response code.
+            </summary>
+            <remarks>
+            The file must be shared, through the Sheets UI, with the <see
+            cref="F:d9.utl.compat.GoogleUtils.GoogleAuthConfig.Email">email associated with the service account</see>.
+            </remarks>
+            <param name="fileId">The Drive ID of the file to download.</param>
+            <param name="filePath">The path to the file when downloaded.</param>
+            <param name="mimeType">
+            The type of the file to download. Should be a valid <see
+            href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types">MIME type</see>.
+            </param>
+            <returns>
+            The path to the downloaded file, if successfully downloaded, or <see langword="null"/> otherwise.
+            </returns>
+        </member>
+        <member name="T:d9.utl.CommandLineArgs">
+            <summary>
+            Handles automatically loading command-line arguments into variables.
+            </summary>
+            <example>public static readonly string ExampleArg = CommandLineArgs.Get("example", CommandLineArgs.Parsers.FirstNonNullString);</example>
+        </member>
+        <member name="P:d9.utl.CommandLineArgs.IntermediateArgs">
+            <summary>
+            The IntermediateArgs instance for this run of the application.
+            </summary>
+        </member>
+        <member name="T:d9.utl.CommandLineArgs.Parser`1">
+            <summary>
+            Defines a parser which operates on the values recorded for a given variable by an <see
+            cref="P:d9.utl.CommandLineArgs.IntermediateArgs"/> instance and returns an object of the specified type.
+            </summary>
+            <typeparam name="T">The type of the object to return.</typeparam>
+            <param name="values">
+            A potentially <see langword="null"/><see cref="T:System.Collections.Generic.IEnumerable`1">IEnumerable</see>&lt; <see
+            langword="string"/>&gt; corresponding to the values passed after invoking a given variable's name.
+            </param>
+            <param name="flag">
+            If the <see cref="P:d9.utl.IntermediateArgs._flags">flag</see> specified for the variable in question
+            is present, <see langword="true"/>; otherwise, <see langword="false"/>.
+            </param>
+            <returns>
+            An object of type <typeparamref name="T"/>, if parsing was successful, or <see
+            langword="null"/> if parsing was not successful.
+            </returns>
+        </member>
+        <member name="M:d9.utl.CommandLineArgs.#cctor">
+            <summary>
+            Loads the command-line <see langword="args"/> and parses them into <see
+            cref="P:d9.utl.CommandLineArgs.IntermediateArgs">an intermediate state</see>.
+            </summary>
+        </member>
+        <member name="M:d9.utl.CommandLineArgs.TryGet``1(System.String,d9.utl.CommandLineArgs.Parser{``0})">
+            <summary>
+            Attempts to get the argument named <c><paramref name="argName"/></c> as type <typeparamref
+            name="T"/> using the specified <c><paramref name="parser"/></c>, returning <see
+            langword="null"/> if unsuccessful.
+            </summary>
+            <typeparam name="T">The type of the variable to get.</typeparam>
+            <param name="argName">The command-line name of the variable to get.</param>
+            <param name="parser">The <see cref="T:d9.utl.CommandLineArgs.Parser`1"/> used to get the variable's value.</param>
+            <returns>
+            An object of type <typeparamref name="T"/> if parsing was successful, or <see
+            langword="null"/> otherwise.
+            </returns>
+        </member>
+        <member name="M:d9.utl.CommandLineArgs.GetFlag(System.String,System.Nullable{System.Char})">
+            <summary>
+            Gets the specified <see cref="M:d9.utl.CommandLineArgs.GetFlag(System.String,System.Nullable{System.Char})">command-line flag</see>.
+            </summary>
+            <remarks>
+            Currently, conflicting flag identifiers are <b>not</b> detected, so be careful that
+            variables which are not supposed to be equivalent do not share their abbreviations.
+            </remarks>
+            <param name="argName">The name of the flag to get.</param>
+            <param name="flag">
+            The single-character abbreviation for the flag. If not specified, defaults to the lowercase
+            equivalent of the first character of the specified <c><paramref name="argName"/></c>.
+            </param>
+            <returns>
+            <see langword="true"/> if the variable was defined at least once or its corresponding <see
+            cref="P:d9.utl.IntermediateArgs.Item(System.Char)">flag</see> is present in the arguments, or <see
+            langword="false"/> otherwise.
+            </returns>
+        </member>
+        <member name="M:d9.utl.CommandLineArgs.Get``1(System.String,d9.utl.CommandLineArgs.Parser{``0},System.Exception)">
+            <summary>
+            Gets the value of the argument named <c><paramref name="argName"/></c>, if present, and
+            <b>throws an exception</b> if the argument is not found.
+            </summary>
+            <remarks><inheritdoc cref="M:d9.utl.CommandLineArgs.TryGet``1(System.String,d9.utl.CommandLineArgs.Parser{``0})" path="/remarks"/></remarks>
+            <typeparam name="T"><inheritdoc cref="M:d9.utl.CommandLineArgs.TryGet``1(System.String,d9.utl.CommandLineArgs.Parser{``0})" path="/typeparam[@name='T']"/></typeparam>
+            <param name="argName"><inheritdoc cref="M:d9.utl.CommandLineArgs.TryGet``1(System.String,d9.utl.CommandLineArgs.Parser{``0})" path="/param[@name='argName']"/></param>
+            <param name="parser"><inheritdoc cref="M:d9.utl.CommandLineArgs.TryGet``1(System.String,d9.utl.CommandLineArgs.Parser{``0})" path="/param[@name='parser']"/></param>
+            <param name="exception">
+            The exception to throw if the variable is not found. If not specified, a generic <see
+            cref="T:System.Exception"/> is thrown.
+            </param>
+            <returns>The value of the argument named <c><paramref name="argName"/></c>, if it exists.</returns>
+        </member>
+        <member name="T:d9.utl.CommandLineArgs.Parsers">
+            <summary>
+            Predefined <see cref="T:d9.utl.CommandLineArgs.Parser`1">parsers</see> for command-line args.
+            </summary>
+            <summary>
+            Predefined <see cref="T:d9.utl.CommandLineArgs.Parser`1">parsers</see> for command-line args.
+            </summary>
+            <summary>
+            Predefined <see cref="T:d9.utl.CommandLineArgs.Parser`1">parsers</see> for command-line args.
+            </summary>
+        </member>
+        <member name="P:d9.utl.CommandLineArgs.Parsers.FirstNonEmptyString">
+            <summary>
+            Selects the first <see langword="string"/> among the values whose length is greater than 0.
+            </summary>
+            <remarks>Ignores the <c>flag</c> argument. Previously NonNullOrEmpty, but i realized that parsers will never get passed null values.</remarks>
+        </member>
+        <member name="P:d9.utl.CommandLineArgs.Parsers.Raw">
+            <summary>
+            Returns the potentially <see langword="null"/><see
+            cref="T:System.Collections.Generic.IEnumerable`1">IEnumerable</see>&lt; <see langword="string"/>&gt; corresponding
+            to the actual values passed when specifying the given variable.
+            </summary>
+            <remarks>Ignores the <c>flag</c> argument.</remarks>
+        </member>
+        <member name="P:d9.utl.CommandLineArgs.Parsers.Flag">
+            <summary>
+            Returns <inheritdoc cref="M:d9.utl.CommandLineArgs.GetFlag(System.String,System.Nullable{System.Char})" path="/returns"/>
+            </summary>
+        </member>
+        <member name="P:d9.utl.CommandLineArgs.Parsers.FolderPath">
+            <summary>
+            <para>
+            Checks that the <see cref="P:d9.utl.CommandLineArgs.Parsers.FirstNonEmptyString">first non-null-or-empty <see
+            langword="string"/></see> is a path to a folder.
+            </para>
+            <list type="bullet">
+            <item>If the folder exists, returns the path.</item>
+            <item>
+            If the folder does not exist but the path is valid, creates the folder and returns the path.
+            </item>
+            <item>Otherwise, returns <see langword="null"/>.</item>
+            </list>
+            <para>
+            If the result is not <see langword="null"/>, it is guaranteed to be a path pointing to a
+            folder which exists.
+            </para>
+            </summary>
+        </member>
+        <member name="P:d9.utl.CommandLineArgs.Parsers.FilePath">
+            <summary>
+            <para>
+            Checks that the <see cref="P:d9.utl.CommandLineArgs.Parsers.FirstNonEmptyString">first non-null-or-empty <see
+            langword="string"/></see> is a path to an existing file. If the file exists, returns the
+            path; returns <see langword="null"/> otherwise.
+            </para>
+            <para>
+            If the result is not <see langword="null"/>, it is guaranteed to be a path pointing to a
+            folder which exists.
+            </para>
+            </summary>
+        </member>
+        <member name="M:d9.utl.CommandLineArgs.Parsers.Parsable``1(System.IFormatProvider)">
+            <summary>
+            Parses a reference type which implements <see cref="T:System.IParsable`1"/> from the first
+            parsable string in the given values.
+            </summary>
+            <typeparam name="T">The type to return.</typeparam>
+            <param name="formatProvider">
+            An <see cref="T:System.IFormatProvider"/> which is passed to <see
+            cref="M:System.IParsable`1.TryParse(System.String,System.IFormatProvider,`0@)"/> in order to try
+            to parse each string.
+            </param>
+            <returns>
+            An instance of <typeparamref name="T"/>, if any of the <c>values</c> can be successfully
+            parsed, or <see langword="null"/> otherwise.
+            </returns>
+        </member>
+        <member name="M:d9.utl.CommandLineArgs.Parsers.Struct``1(System.IFormatProvider)">
+            <summary>
+            Parses a value type which implements <see cref="T:System.IParsable`1"/> from the first
+            parsable string in the given values.
+            </summary>
+            <typeparam name="T">The type to return.</typeparam>
+            <param name="formatProvider">
+            An <see cref="T:System.IFormatProvider"/> which is passed to <see
+            cref="M:System.IParsable`1.TryParse(System.String,System.IFormatProvider,`0@)"/> in order to try
+            to parse each string.
+            </param>
+            <returns>
+            An instance of <typeparamref name="T"/>, if any of the <c>values</c> can be successfully
+            parsed, or <see langword="null"/> otherwise.
+            </returns>
+        </member>
+        <member name="T:d9.utl.Config">
+            <summary>
+            Utilities related to configuring the program using json files.
+            </summary>
+        </member>
+        <member name="F:d9.utl.Config.BaseFolderPath">
+            <summary>
+            The base folder path, passed in via command-line args, or the directory from which the program is executed if such a path is not specified.
+            </summary>
+            <remarks>It is intended that configuration files go into this folder or a subfolder, but this is not required.</remarks>
+        </member>
+        <member name="F:d9.utl.Config.DefaultSerializerOptions">
+            <summary>
+            The default serializer options to use when writing and reading config files.
+            </summary>
+        </member>
+        <member name="M:d9.utl.Config.TryLoad``1(System.String,System.Boolean)">
+            <summary>
+            Tries to load a json file at the specified <c><paramref name="path"/></c>, catching any errors in case
+            the file does not exist or is malformed.
+            </summary>
+            <typeparam name="T">The type to try to load the file as.</typeparam>
+            <param name="path">The path to the file to load.</param>
+            <param name="suppressWarnings">If <see langword="false"/>, warnings are printed, in debug mode only, if the file is not successfully loaded.</param>
+            <returns>A <typeparamref name="T"/> instance loaded from the specified path, if successful, or <see langword="null"/> otherwise.</returns>
+        </member>
+        <member name="T:d9.utl.IntermediateArgs">
+            <summary>
+            Parses console <see langword="args"/> formatted as an approximation of Unix console arguments into a structure representing arguments and their values.
+            <br/><br/>
+            </summary>
+            <remarks>
+            For example,
+            <br/><c>program.exe -- asdf -f --arg1 69 --exampleList a b c d --arg2 42</c><br/>
+            is parsed to
+            <br/>
+            <code>
+            IntermediateArgs {
+              _args: {
+                // note that dictionaries are unordered; i sorted this for convenience
+                arg1: ["69"]
+                arg2: ["42"]
+                exampleList: ["a", "b", "c", "d"]
+              }
+              flags: ['f']
+              warnings: [
+                "position 1: Encountered "--" but no currentKey to close.",
+                "position 2: Encountered value "asdf" but no currentKey to add it to."
+              ]
+            }
+            </code>
+            </remarks>
+        </member>
+        <member name="P:d9.utl.IntermediateArgs._args">
+            <summary>
+            The arguments without dashes, organized by their keys.
+            </summary>
+        </member>
+        <member name="P:d9.utl.IntermediateArgs._flags">
+            <summary>
+            The flags set on the program. Note that flags can repeat, and that the <see cref="M:d9.utl.CommandLineArgs.GetFlag(System.String,System.Nullable{System.Char})">default implementation</see>
+            counts occurrences of empty but non-<see langword="null"/> collections in <see cref="P:d9.utl.IntermediateArgs._args">_args</see> corresponding to its alias as occurrences of that key.
+            </summary>
+        </member>
+        <member name="P:d9.utl.IntermediateArgs.Warnings">
+            <summary>
+            Any warnings generated due to syntax errors in the arguments and their respective positions.
+            </summary>
+        </member>
+        <member name="P:d9.utl.IntermediateArgs._warnings">
+            <inheritdoc cref="P:d9.utl.IntermediateArgs.Warnings"/>
+        </member>
+        <member name="T:d9.utl.IntermediateArgs.ArgCase">
+            <summary>
+            Used to simplify parsing code in the constructor.
+            </summary>
+        </member>
+        <member name="M:d9.utl.IntermediateArgs.#ctor(System.String[])">
+            <summary>
+            Constructs a new IntermediateArgs instance from the unparsed arguments passed to the program.
+            </summary>
+            <param name="args">The unparsed arguments, corresponding to the <see langword="args"/> keyword or the <c>args</c> argument to a program's
+            <c>Main(<see langword="string"/>[] args)</c> method.</param>
+        </member>
+        <member name="P:d9.utl.IntermediateArgs.Item(System.String)">
+            <summary>
+            Gets the values corresponding to the specified key, if any.
+            </summary>
+            <param name="key">The key to look for in the underlying dictionary.</param>
+            <returns>If the key was present at least once in the args, a non-<see langword="null"/> IEnumerable, with corresponding values, if there were any, in
+            order of appearance.<br/><br/>If the key was <b>not</b> present in the args, <see langword="null"/>.</returns>
+        </member>
+        <member name="P:d9.utl.IntermediateArgs.Item(System.Char)">
+            <summary>
+            Gets the value of a given flag character.
+            </summary>
+            <param name="flag">The single-character abbreviation of a <see cref="M:d9.utl.CommandLineArgs.GetFlag(System.String,System.Nullable{System.Char})">flag</see> whose presence to check.</param>
+            <returns><see langword="true"/> if the flag was specified using its abbreviation, or <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:d9.utl.IntermediateArgs.ContainsKey(System.String)">
+            <summary>
+            Tells whether the given key corresponds to the name of an argument which was passed to the program.
+            </summary>
+            <param name="key">The key to look for.</param>
+            <returns><see langword="true"/> if the key was found, or <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:d9.utl.IntermediateArgs.ToString">
+            <summary>
+            Represents these intermediate args as a human-readable <see langword="string"/>.
+            </summary>
+            <returns>A <see langword="string"/> listing the args and flags specified when the program was executed.</returns>
+        </member>
+        <member name="M:d9.utl.IntermediateArgs.FlagMatcher">
+            <remarks>
+            Pattern explanation:<br/>
+            <code>
+            ○ Match if at the beginning of the string.<br/>
+            ○ Match '-'.<br/>
+            ○ Match any character other than '\n'.<br/>
+            ○ Match if at the end of the string or if before an ending newline.<br/>
+            </code>
+            </remarks>
+        </member>
+        <member name="M:d9.utl.IntermediateArgs.ArgMatcher">
+            <remarks>
+            Pattern explanation:<br/>
+            <code>
+            ○ Match if at the beginning of the string.<br/>
+            ○ Match the string "--".<br/>
+            ○ Match a character other than '\n' greedily at least once.<br/>
+            ○ Match if at the end of the string or if before an ending newline.<br/>
+            </code>
+            </remarks>
+        </member>
+        <member name="T:d9.utl.IValidityCheck">
+            <summary>
+            Provides a way to check whether an object which may not have been initialized correctly, e.g. a
+            <see cref="M:d9.utl.Config.TryLoad``1(System.String,System.Boolean)">config file loaded from json</see>, was in fact
+            loaded correctly.
+            </summary>
+        </member>
+        <member name="M:d9.utl.IValidityCheck.IsValid(System.String@)">
+            <summary>
+            Checks the implementing object for validity, and, if it is invalid, outputs the <paramref
+            name="reason"/> it is not valid.
+            </summary>
+            <param name="reason">
+            The reason the object is invalid, if it is invalid. Should be ignored if the method returns
+            <see langword="true"/>.
+            </param>
+            <returns>
+            <see langword="true"/> if this object is fully and properly initialized, or <see
+            langword="false"/> otherwise.
+            </returns>
+        </member>
+        <member name="T:d9.utl.Constants">
+            <summary>
+            Useful global variables.
+            </summary>
+        </member>
+        <member name="F:d9.utl.Constants.Apostrophes">
+            <summary>
+            Normal apostrophes plus the weird ones that iPhones automatically replace the normal ones with.
+            </summary>
+        </member>
+        <member name="F:d9.utl.Constants.Quotes">
+            <summary>
+            Normal quotation marks plus the weird ones that iPhones automatically replace the normal ones with.
+            </summary>
+        </member>
+        <member name="F:d9.utl.Constants.Hyphens">
+            <summary>
+            Dashes of various lengths.
+            </summary>
+        </member>
+        <member name="F:d9.utl.Constants.NullCharacter">
+            <summary>
+            The null character, traditionally used for ending strings.
+            </summary>
+        </member>
+        <member name="M:d9.utl.Constants.MimeType(System.String)">
+            <summary>
+            The <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/">MIME type</see> corresponding
+            to a given file extension.
+            </summary>
+            <param name="fileExtension">The file extension whose MIME type to get.</param>
+            <returns>The corresponding MIME type, if a recognized file extension is passed in, or <c>application/octet-stream</c>
+            if an invalid type is passed in.</returns>
+            <remarks>See <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types">here</see>
+            for more information.</remarks>
+        </member>
+        <member name="T:d9.utl.IConsole">
+            <summary>
+            Interface describing basic methods a console must have to be used with a <see cref="T:d9.utl.Log"/> instance.
+            </summary>
+        </member>
+        <member name="M:d9.utl.IConsole.Write(System.Object)">
+            <summary>
+            Writes to the console <b>without</b> a trailing newline character.
+            </summary>
+            <param name="obj">The object to write.</param>
+        </member>
+        <member name="M:d9.utl.IConsole.WriteLine(System.Object)">
+            <summary>
+            Writes to the console <b>with</b> a trailing newline character.
+            </summary>
+            <param name="obj"><inheritdoc cref="M:d9.utl.IConsole.Write(System.Object)" path="/param[@name='obj']"/></param>
+        </member>
+        <member name="T:d9.utl.Log">
+            <summary>
+            Handles synchronously logging to a file and to stdout.
+            </summary>
+        </member>
+        <member name="T:d9.utl.Log.Mode">
+            <summary>
+            The way a <see cref="T:d9.utl.Log"/> writes to a file.
+            </summary>
+        </member>
+        <member name="F:d9.utl.Log.Mode.WriteImmediate">
+            <summary>
+            Opens the file, appends the text, and closes it again. Less efficient but potentially more reliable.
+            </summary>
+        </member>
+        <member name="F:d9.utl.Log.Mode.Stream">
+            <summary>
+            Writes to the file as it goes. More efficient.
+            </summary>
+        </member>
+        <member name="M:d9.utl.Log.#ctor(System.String,d9.utl.IConsole,System.Boolean,d9.utl.Log.Mode)">
+            <summary>
+            Creates and, if applicable, initializes a new logging session.
+            </summary>
+            <param name="path">The path to the log file to write to. If not specified, the log will only write to the console.</param>
+            <param name="console">The <see cref="T:d9.utl.IConsole"/> to write to. If not specified, will write to <see cref="T:System.Console"/> by default.</param>
+            <param name="overwrite">If <see langword="true"/>, will overwrite any file at <c><paramref name="path"/></c> if one exists. 
+            If <see langword="false"/>, will instead append to any such file.</param>
+            <param name="mode">The <see cref="T:d9.utl.Log.Mode"/> to use when writing to the file.</param>
+        </member>
+        <member name="M:d9.utl.Log.Dispose">
+            <summary>
+            Flushes and closes the <see cref="T:System.IO.StreamWriter">stream</see> used to write to the log file, if any.
+            </summary>
+            <remarks>Implements <see cref="M:System.IDisposable.Dispose"/>.</remarks>
+        </member>
+        <member name="M:d9.utl.Log.Write(System.Object)">
+            <summary>
+            Writes the specified object (converted to a <see langword="string"/> with <see cref="M:d9.utl.StringUtils.PrintNull(System.Object,System.String)"/>) to the console
+            and the log file, if any, <b>without</b> a trailing newline character.
+            </summary>
+            <param name="obj">The object to write.</param>
+        </member>
+        <member name="M:d9.utl.Log.WriteLine(System.Object)">
+            <summary>
+            Writes the specified object (converted to a <see langword="string"/> with <see cref="M:d9.utl.StringUtils.PrintNull(System.Object,System.String)"/>) to the console
+            and the log file, if any, <b>with</b> a trailing newline character.
+            </summary>
+            <remarks>Doesn't call <see cref="M:d9.utl.Log.Write(System.Object)"/> in case the <see cref="F:d9.utl.Log.Console"/> handles writing lines differently.</remarks>
+            <param name="obj">The object to write.</param>
+        </member>
+        <member name="M:d9.utl.Log.WriteToFile(System.String)">
+            <summary>
+            Writes the specified string to a file, either the Stream if applicable, to the Path,
+            or does nothing if neither is specified.
+            </summary>
+            <param name="s">The string to write.</param>
+        </member>
+        <member name="T:d9.utl.CountingDictionary`2">
+            <summary>
+            Unnecessarily generalized class which lets you count arbitrary objects.
+            </summary>
+            <typeparam name="K">The object to count.</typeparam>
+            <typeparam name="V">A <see href="">number</see> type to use to count.</typeparam>
+        </member>
+        <member name="M:d9.utl.CountingDictionary`2.#ctor">
+            <summary>
+            Initializes an empty counting dictionary with 0 entries.
+            </summary>
+        </member>
+        <member name="M:d9.utl.CountingDictionary`2.#ctor(System.Collections.Generic.Dictionary{`0,`1})">
+            <summary>
+            Initializes a counting dictionary with the specified keys and counts.
+            </summary>
+            <param name="dict">The dictionary with which to initialize the counting dictionary.</param>
+        </member>
+        <member name="M:d9.utl.CountingDictionary`2.Increment(`0)">
+            <summary>
+            Adds to a specific key.
+            </summary>
+            <param name="key">The object instance to count.</param>
+        </member>
+        <member name="P:d9.utl.CountingDictionary`2.Item(`0)">
+            <param name="key">The key whose count to retrieve.</param>
+            <returns>The number of times that key has been <see cref="M:d9.utl.CountingDictionary`2.Increment(`0)">inc</see> to the dictionary.</returns>
+        </member>
+        <member name="M:d9.utl.CountingDictionary`2.GetEnumerator">
+            <summary>
+            Implements <see cref="T:System.Collections.IEnumerator"/><c>.GetEnumerator()</c> for the dictionary's key-value pairs.
+            </summary>
+            <returns>
+            The internal dictionary's enumerator.
+            </returns>
+        </member>
+        <member name="M:d9.utl.CountingDictionary`2.Descending">
+            <summary>
+            Gets this dictionary's items ordered by their values from greatest to least.
+            </summary>
+            <returns>This dictionary's key-value pairs in descending order by value.</returns>
+        </member>
+        <member name="M:d9.utl.CountingDictionary`2.Ascending">
+            <summary>
+            Gets this dictionary's items ordered by their values from least to greatest.
+            </summary>
+            <returns>This dictionary's key-value pairs in ascending order by value.</returns>
+        </member>
+        <member name="P:d9.utl.CountingDictionary`2.Total">
+            <summary>
+            The sum of the values in this dictionary.
+            </summary>
+        </member>
+        <member name="P:d9.utl.CountingDictionary`2.Count">
+            <summary>
+            The number of keys in this dictionary.
+            </summary>
+        </member>
+        <member name="P:d9.utl.CountingDictionary`2.Keys">
+            <summary>
+            Enumerates over the keys in this dictionary.
+            </summary>
+        </member>
+        <member name="P:d9.utl.CountingDictionary`2.Values">
+            <summary>
+            Enumerates over the values in this dictionary.
+            </summary>
+        </member>
+        <member name="T:d9.utl.Cycle`1">
+            <summary>
+            Represents the idea of a closed loop of values which can be iterated along.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:d9.utl.Cycle`1.Prepend(`0)">
+            <summary>
+            Inserts the specified <paramref name="item"/> before the <see cref="P:d9.utl.Cycle`1.CurrentItem"/>.
+            </summary>
+            <param name="item">The item to insert.</param>
+        </member>
+        <member name="M:d9.utl.Cycle`1.GetEnumerator">
+            <summary>
+            Gets the enumerator for this cycle, starting at the <see cref="P:d9.utl.Cycle`1.CurrentItem">current item</see>
+            and continuing until it has looped back around to the previous element.
+            </summary>
+            <returns>Every item in the cycle exactly once, starting at the <see cref="P:d9.utl.Cycle`1.CurrentItem">current item</see>.</returns>
+        </member>
+        <member name="M:d9.utl.Cycle`1.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc cref="M:d9.utl.Cycle`1.GetEnumerator"/>
+        </member>
+        <member name="P:d9.utl.Cycle`1.Item(System.Int32)">
+            <summary>
+            Gets the item at the specified <paramref name="offset"/> in the sequence.
+            </summary>
+            <param name="offset">The index of the item to select, relative to the current item.</param>
+            <returns>The item at the specified position.</returns>
+        </member>
+        <member name="M:d9.utl.GenericEnumerator`1.Dispose">
+            <summary>
+            Not implemented, as there are no additional resources to dispose. See 
+            <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerator-1?view=net-7.0#notes-to-implementers">
+            here</see> for more information.
+            </summary>
+        </member>
+        <member name="T:d9.utl.Linq2">
+            <summary>
+            If Linq is so good, why isn't there a-
+            </summary>
+        </member>
+        <member name="M:d9.utl.Linq2.BreakInto``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Breaks a collection into <c><paramref name="n"/></c> parts of roughly equal size.<br/><br/>
+            Specifically, the size of each part will either be <c>floor(<paramref name="original"/>.Count()</c> / <c><paramref name="n"/>)</c>
+            or <c>floor(<paramref name="original"/>.Count()</c> / <c><paramref name="n"/>) + 1</c>, with the larger parts coming first.
+            </summary>
+            <remarks>Does not modify the original.</remarks>
+            <typeparam name="T">The type of the elements of the enumerable.</typeparam>
+            <param name="original">The enumerable to be broken up.</param>
+            <param name="n">The number of parts to break the enumerable into.</param>
+            <returns>An enumerable of enumerables, broken up as described above.</returns>
+        </member>
+        <member name="M:d9.utl.Linq2.Shuffled``1(System.Collections.Generic.IEnumerable{``0},System.Random)">
+            <summary>
+            Randomly reorders a collection.
+            </summary>
+            <typeparam name="T">The type of the elements of the enumerable.</typeparam>
+            <param name="original">The original enumerable, which is not modified.</param>
+            <returns>The elements of <c>original</c>, in a random order.</returns>
+        </member>
+        <member name="M:d9.utl.Linq2.RandomElement``1(System.Collections.Generic.IEnumerable{``0},System.Random)">
+            <summary>
+            Selects an element from the given <paramref name="enumerable"/> randomly.
+            </summary>
+            <typeparam name="T">The type of the elements of the given <paramref name="enumerable"/>.</typeparam>
+            <param name="enumerable">The input enumerable.</param>
+            <param name="random">
+                A <see cref="T:System.Random"/> object which, if provided, will be used to generate the index of the element to return.
+                <br/><br/>
+                If <see langword="null"/>, a new <see cref="T:System.Random"/> will be created for use in this function.
+            </param>
+            <returns>A random element from <paramref name="enumerable"/>.</returns>
+        </member>
+        <member name="M:d9.utl.Linq2.WeightedRandomElement``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Double},System.Double,System.Random)">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="enumerable"></param>
+            <param name="weight"></param>
+            <param name="targetWeight"></param>
+            <param name="random"></param>
+            <returns></returns>
+            <remarks>Implements <see href="https://xlinux.nist.gov/dads//HTML/reservoirSampling.html">this algorithm</see>.</remarks>
+        </member>
+        <member name="T:d9.utl.FileUtils">
+            <summary>
+            Utilities for file, path, and directory manipulation.
+            </summary>
+            <remarks>Ensure that <see cref="M:d9.utl.FileUtils.AbsoluteOrInBaseFolder(System.String)"/> is deterministic (and therefore can be used for comparisons)</remarks>
+        </member>
+        <member name="M:d9.utl.FileUtils.AbsoluteOrInBaseFolder(System.String)">
+            <summary>
+            If the specified <c><paramref name="path"/></c> is an absolute path, returns it unmodified; otherwise, creates an absolute path
+            treating it as a subdirectory of <see cref="F:d9.utl.Config.BaseFolderPath"/>.
+            </summary>
+            <param name="path">The path to make into an absolute path.</param>
+            <returns>A <see langword="string"/> containing an absolute path, as specified above.</returns>
+        </member>
+        <member name="M:d9.utl.FileUtils.CopyFileTo(System.String,System.String,System.Boolean)">
+            <summary>
+            Copies a file from <c><paramref name="oldPath"/></c> to <c><paramref name="newPath"/></c>.
+            </summary>
+            <param name="oldPath">The path to the source file.</param>
+            <param name="newPath">The path to the destination file.</param>
+            <param name="overwrite">If <see langword="false"/>, an exception will be thrown by <see cref="M:System.IO.File.Copy(System.String,System.String,System.Boolean)"/> if a file exists
+            at the <c><paramref name="newPath"/></c>.</param>
+            <exception cref="T:System.Exception">Thrown if the directory path is <see langword="null"/>.</exception>
+        </member>
+        <member name="M:d9.utl.FileUtils.DeleteFolderRecursive(System.String,System.Boolean)">
+            <summary>
+            Deletes any empty subfolders of the specified <c><paramref name="folder"/></c>, then, if the folder is empty, deletes it.
+            </summary>
+            <param name="folder">The folder to delete.</param>
+            <param name="suppressWarnings">If <see langword="false"/>, a warning will be printed if this method attempts to delete a non-empty folder.</param>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:d9.utl.FileUtils.DeleteEmptyFolders(System.String,System.String[])">
+            <summary>
+            Deletes any empty folders in the specified <c><paramref name="folder"/></c>.
+            </summary>
+            <param name="folder">The folder whose empty subfolders to delete.</param>
+            <param name="pathsToIgnore">The absolute paths to folders whose empty subfolders should not be deleted.</param>
+            <remarks>TODO: update to support relative paths in <c><paramref name="pathsToIgnore"/></c> as well.</remarks>
+        </member>
+        <member name="M:d9.utl.FileUtils.FileHash(System.IO.Stream)">
+            <summary>
+            Generates a unique hash of the given file for fast comparison purposes.
+            </summary>
+            <param name="stream">A stream of the file to hash.</param>
+            <returns>A SHA512 hash of the file's bytes.</returns>
+            <remarks>Based on <see href="https://stackoverflow.com/a/51966515">this StackOverflow answer</see>.</remarks>
+        </member>
+        <member name="M:d9.utl.FileUtils.FileHash(System.String)">
+            <summary>
+            Generates a unique hash of the given file for fast comparison purposes.
+            </summary>
+            <param name="path">The path to the file to hash.</param>
+            <returns>A SHA512 hash of the file's bytes.</returns>
+            <remarks>Based on <see href="https://stackoverflow.com/a/51966515">this StackOverflow answer</see>.</remarks>
+        </member>
+        <member name="M:d9.utl.FileUtils.FolderIsEmpty(System.String)">
+            <summary>
+            Whether the specified <c><paramref name="folder"/></c> is empty.
+            </summary>
+            <param name="folder">The folder whose emptiness to check.</param>
+            <returns><see langword="true"/> if the <c><paramref name="folder"/></c> contains neither files nor directories, or <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:d9.utl.FileUtils.IsInFolder(System.String,System.String)">
+            <summary>
+            Determines whether the specified <c><paramref name="path"/></c> is in the specified <c><paramref name="folder"/></c>, or a
+            <see cref="M:d9.utl.FileUtils.IsSubfolderOf(System.String,System.String)">subfolder thereof</see>.
+            </summary>
+            <param name="path">The path whose membership in <c><paramref name="folder"/></c> to determine.</param>
+            <param name="folder">The potential parent folder to the specified <c><paramref name="path"/></c>.</param>
+            <returns><see langword="true"/> if the specified <c><paramref name="path"/></c> is in <c><paramref name="folder"/></c> as specified above,
+            or <see langword="false"/> otherwise.</returns>
+            <exception cref="T:System.Exception">Thrown if the specified <c><paramref name="path"/></c> is not a valid directory.</exception>
+        </member>
+        <member name="M:d9.utl.FileUtils.IsSubfolderOf(System.String,System.String)">
+            <summary>
+            Determines whether the specified <c><paramref name="folder"/></c> is or is a subfolder of the specified <c><paramref name="possibleParent"/></c>.
+            </summary>
+            <param name="folder">The path whose subfolder status to determine.</param>
+            <param name="possibleParent">The potential parent of the folder.</param>
+            <returns><see langword="true"/> if the specified <c><paramref name="folder"/></c> is identical to or a subfolder of <c><paramref name="possibleParent"/></c>,
+            or <see langword="false"/> otherwise.
+            </returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:d9.utl.FileUtils.MoveFileTo(System.String,System.String,System.Boolean)">
+            <summary>
+            Moves a file from <paramref name="oldPath"/> to <paramref name="newPath"/>, creating any missing directories as appropriate.
+            </summary>
+            <param name="oldPath"><inheritdoc cref="M:d9.utl.FileUtils.CopyFileTo(System.String,System.String,System.Boolean)" path="/param[@name='oldPath']"/></param>
+            <param name="newPath"><inheritdoc cref="M:d9.utl.FileUtils.CopyFileTo(System.String,System.String,System.Boolean)" path="/param[@name='newPath']"/></param>
+            <param name="overwrite"><inheritdoc cref="M:d9.utl.FileUtils.CopyFileTo(System.String,System.String,System.Boolean)" path="/param[@name='overwrite']"/></param>
+        </member>
+        <member name="M:d9.utl.FileUtils.PathSafe(System.String,System.String)">
+            <summary>
+            Replaces any characters in <c><paramref name="s"/></c> which are not permitted in valid folder or file names with the specified 
+            <c><paramref name="replacement"/></c>.
+            </summary>
+            <param name="s">The string to make into a safe folder or file name.</param>
+            <param name="replacement">The string to replace invalid characters with.</param>
+            <returns>A safe folder or file name, as described above.</returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="T:d9.utl.MathUtils">
+            <summary>
+            Mathematical utilities.
+            </summary>
+        </member>
+        <member name="M:d9.utl.MathUtils.Clamp``1(``0,``0,``0)">
+            <summary>
+            Clamps an <see cref="T:System.IComparable"/> within a specified range.
+            </summary>
+            <typeparam name="T">The type of the arguments. Must implement <see cref="T:System.IComparable"/>.</typeparam>
+            <param name="t">The value to clamp.</param>
+            <param name="min">The smaller of the two values.</param>
+            <param name="max">The larger of the two values.</param>
+            <returns><c>min</c> if it's larger than <c>t</c>, <c>max</c> if it's smaller than <c>t</c>, or <c>t</c> otherwise.</returns>
+        </member>
+        <member name="M:d9.utl.MathUtils.Mean``1(``0[])">
+            <summary>
+            Gets the mean of an arbitrary set of numbers.
+            </summary>
+            <typeparam name="T">A type which 
+            <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.iadditionoperators-3">can be added</see> to itself
+            and <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.idivisionoperators-3">can be divided</see>
+            by an <see langword="int"/>.
+            </typeparam>
+            <param name="numbers">An array of numbers to be averaged.</param>
+            <returns>The <see href="https://en.wikipedia.org/wiki/Arithmetic_mean">arithmetic mean</see> of the given numbers.</returns>
+        </member>
+        <member name="M:d9.utl.MathUtils.Mean``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Gets the mean of an arbitrary set of numbers.
+            </summary>
+            <typeparam name="T">A type which 
+            <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.iadditionoperators-3">can be added</see> to itself
+            and <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.idivisionoperators-3">can be divided</see>
+            by an <see langword="int"/>.
+            </typeparam>
+            <param name="numbers">An array of numbers to be averaged.</param>
+            <returns>The <see href="https://en.wikipedia.org/wiki/Arithmetic_mean">arithmetic mean</see> of the given numbers.</returns>
+        </member>
+        <member name="M:d9.utl.MathUtils.Median``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``0,``0})">
+            <summary>
+            Gets the median, i.e. middle value when ordered, of an arbitrary set of orderable objects.
+            </summary>
+            <typeparam name="T">A type which implements <see cref="T:System.IComparable"/>.</typeparam>
+            <param name="orderables">The collection whose median to find.</param>
+            <param name="ifEven">A function which breaks a tie when the collection is even. For example, the median of an even set of numbers
+            is the mean of the two middle numbers.</param>
+            <returns>The median as described above.</returns>
+        </member>
+        <member name="M:d9.utl.MathUtils.Median``1(``0[])">
+            <summary>
+            Gets the median of an arbitrary set of numbers.
+            </summary>
+            <typeparam name="T">A type which is <see cref="T:System.IComparable">comparable</see> and implements 
+            <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.iadditionoperators-3">addition operators</see> with itself
+            and <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.idivisionoperators-3">division operators</see>
+            with itself as the dividend and <see langword="int"/> as the divisor.
+            </typeparam>
+            <param name="numbers">The numbers whose median to find.</param>
+            <returns>The mathematical median, i.e. the middle number of the ordered collection if the collection has an odd number of elements, or the average
+            of the two middle numbers if it has an even number of elements.</returns>
+        </member>
+        <member name="M:d9.utl.MathUtils.IsOdd``1(``0)">
+            <typeparam name="T">A <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumberbase-1">numeric</see> type.</typeparam>
+            <param name="t">The number whose oddness to check.</param>
+            <returns><see langword="true"/> if the number is odd, or <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:d9.utl.MathUtils.IsEven``1(``0)">
+            <typeparam name="T">A <see href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.inumberbase-1">numeric</see> type.</typeparam>
+            <param name="t">The number whose evenness to check.</param>
+            <returns><see langword="true"/> if the number is even, or <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:d9.utl.NetUtils.ParseQuery(System.Uri)">
+            <summary>
+            Parses the query portion of a <see cref="T:System.Uri"/> and returns each item and its corresponding value.
+            </summary>
+            <remarks>Currently, if a query has duplicates of the same key, only the first one will be returned.</remarks>
+            <returns>A dictionary</returns>
+        </member>
+        <member name="T:d9.utl.ReflectionUtils">
+            <summary>
+            Various utilities relating to reflection.
+            </summary>
+        </member>
+        <member name="M:d9.utl.ReflectionUtils.AllLoadedAssemblies(System.Func{System.Reflection.Assembly,System.Boolean})">
+            <summary>
+            Filters all loaded assemblies with the specified <c>selector</c>, if any.
+            </summary>
+            <param name="selector">The function to use to filter the assemblies. If <see langword="null"/>, all loaded assemblies will be included.</param>
+            <returns>All loaded assemblies, if the <c>selector</c> is <see langword="null"/>, or all loaded assemblies where the <c>selector</c> returns
+            <see langword="true"/>, if it is not <see langword="null"/>.</returns>
+        </member>
+        <member name="M:d9.utl.ReflectionUtils.HasCustomAttribute``1(System.Reflection.Assembly)">
+            <summary>
+            Tells whether the specified assembly has the specified attribute.
+            </summary>
+            <typeparam name="T">The type to check for. Must inherit from <see cref="T:System.Attribute"/>.</typeparam>
+            <param name="assembly">The assembly to look for the attribute on.</param>
+            <returns><see langword="true"/> if <c>assembly</c> has an <see cref="T:System.Attribute"/> of type <c>T</c>, or <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:d9.utl.ReflectionUtils.MembersWithAttribute``1(System.Type)">
+            <summary>
+            Returns the members of the specified type with the specified attribute.
+            </summary>
+            <typeparam name="T">The type of the attribute to find.</typeparam>
+            <param name="type">The type whose members to select.</param>
+            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1">IEnumerable</see>&lt;(<see cref="T:System.Reflection.MemberInfo"/>, <see cref="T:System.Attribute"/>)&gt; where each element <c>t</c>
+            is a tuple of a member which has the attribute <c>T</c> and the aforementioned attribute.</returns>
+        </member>
+        <member name="M:d9.utl.ReflectionUtils.FullyQualifiedPath(System.Reflection.MemberInfo)">
+            <summary>
+            Prints the fully-qualified logical path to a specified member, i.e. the type which declares it, if applicable, and the namespace which declares it, if applicable.
+            </summary>
+            <param name="member">The member whose path to get.</param>
+            <returns>The fully-qualified path to the specified member, as described above.</returns>
+        </member>
+        <member name="M:d9.utl.ReflectionUtils.AllLoadedTypes(System.Func{System.Type,System.Boolean})">
+            <summary>
+            Filters the types in all loaded assemblies based on a given function.
+            </summary>
+            <param name="selector">The function to use to filter the assemblies. If it returns <see langword="true"/> for a given type, that type is included;
+            otherwise, it is not included.</param>
+            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1">IEnumerable</see>&lt;<see cref="T:System.Type"/>&gt; where every element <c>t</c> is present if and only if
+            <c>selector(t)</c> returns <see langword="true"/>.</returns>
+        </member>
+        <member name="M:d9.utl.ReflectionUtils.AllLoadedTypesWithAttribute``1">
+            <summary>
+            Selects the types in loaded assemblies which have the specified attribute.
+            </summary>
+            <typeparam name="T">The <see cref="T:System.Type"/> of the attribute to select. Must inherit from <see cref="T:System.Attribute"/>.</typeparam>
+            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1">IEnumerable</see>&lt;<see cref="T:System.Type"/>&gt; where every element has the specified attribute.</returns>
+        </member>
+        <member name="M:d9.utl.ReflectionUtils.HasCustomAttribute``1(System.Type)">
+            <summary>
+            Tells whether the specified type has the specified attribute.
+            </summary>
+            <typeparam name="T">The type to check for. Must inherit from <see cref="T:System.Attribute"/>.</typeparam>
+            <param name="type">The type to look for the attribute on.</param>
+            <returns><see langword="true"/> if <c>type</c> has an <see cref="T:System.Attribute"/> of type <c>T</c>, or <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:d9.utl.ReflectionUtils.TypesInAssembliesWithAttribute``1">
+            <summary>
+            Iterates over all loaded assemblies, and from the ones with the specified attribute, selects the types with the same attribute.
+            </summary>
+            <typeparam name="T">The <see cref="T:System.Type"/> of the attribute to select. Must inherit from <see cref="T:System.Attribute"/>.</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:d9.utl.ReflectionUtils.TypesInAssembliesWhere(System.Func{System.Reflection.Assembly,System.Boolean},System.Func{System.Type,System.Boolean})">
+            <summary>
+            Iterates over all loaded assembly, and from the ones which the <c>assemblySelector</c> returns <see langword="true"/> on,
+            returns the types the <c>typeSelector</c>, if any, returns <see langword="true"/> on.
+            </summary>
+            <param name="assemblySelector">A function which decides whether to include a given assembly.</param>
+            <param name="typeSelector">A function which decides whether to include a given type.</param>
+            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1">IEnumerable</see>&lt;<see cref="T:System.Type"/>&gt; where every element <c>t</c> causes 
+            <c>typeSelector</c> to return <see langword="true"/>, and whose declaring assembly causes <c>assemblySelector</c> to return <see langword="true"/>.</returns>
+        </member>
+        <member name="M:d9.utl.ReflectionUtils.TypesWhere(System.Reflection.Assembly,System.Func{System.Type,System.Boolean})">
+            <summary>
+            Filters the types in an assembly based on a given function.
+            </summary>
+            <param name="assembly">The assembly whose types to filter.</param>
+            <param name="selector">The function to use to filter the assembly. If it returns <see langword="true"/> for a given type, that type is included;
+            otherwise, it is not included.</param>
+            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1">IEnumerable</see>&lt;<see cref="T:System.Type"/>&gt; where every element <c>t</c> is present if and only if
+            <c>selector(t)</c> returns <see langword="true"/>.</returns>
+        </member>
+        <member name="T:d9.utl.StringUtils">
+            <summary>
+            Utilities which convert objects to strings or perform operations on strings.
+            </summary>
+        </member>
+        <member name="M:d9.utl.StringUtils.FileNameFormat(System.DateTime)">
+            <summary>
+            Formats a <see cref="T:System.DateTime"/> into a sortable and filesystem-safe string which can be used to name files.
+            </summary>
+            <param name="datetime">The <see cref="T:System.DateTime"/> to format.</param>
+            <returns>The specified <c><paramref name="datetime"/></c> formatted as described above.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.InColumns``1(System.Collections.Generic.IEnumerable{System.ValueTuple{``0,System.Int32}})">
+            <summary><inheritdoc cref="M:d9.utl.StringUtils.InColumns``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{System.Int32})" path="/summary"/></summary>
+            <typeparam name="T">The type of the objects to print.</typeparam>
+            <param name="values">An enumerable holding the objects to print paired with the width of their respective columns.</param>
+            <returns>A string corresponding to the objects <c>t</c> in order, with columns padded to <c>width</c>.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.InColumns``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>Prints the specified objects in columns with specified widths.</summary>
+            <typeparam name="T">The type of the objects to print.</typeparam>
+            <param name="values">An enumerable holding the objects to print.</param>
+            <param name="widths">An enumerable holding the widths of the columns, which will be applied in the same order as the objects.</param>
+            <returns>A string corresponding to the <c>values</c> in order, in columns padded to their respective <c>widths</c>.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.Join(System.Collections.Generic.IEnumerable{System.Char})">
+            <summary>
+            Join a set of characters to a string.
+            </summary>
+            <param name="chars">The characters to join.</param>
+            <returns>The specified characters, joined to a string.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.Join(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Concatenates a collection of strings.
+            </summary>
+            <param name="strings">The strings to join.</param>
+            <returns>The specified strings, concatenated together.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.ListNotation``1(System.Collections.Generic.IEnumerable{``0},System.String,System.String,System.String,System.String)">
+            <summary>
+            Represents an enumerable in human-readable format.
+            </summary>
+            <typeparam name="T">The type the <c>enumerable</c> contains.</typeparam>
+            <param name="enumerable">The enumerable to print.</param>
+            <returns>A string of the format <c>[item1, item2, ... itemN]</c> representing the items in <c>enumerable</c>.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.LowerFirst(System.String)">
+            <summary>
+            Changes the first character of the specified string, if applicable, to lowercase.
+            </summary>
+            <param name="s">The string to format.</param>
+            <returns>The string specified, with its first letter guaranteed to be in lower case.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.NullOrEmpty(System.String)">
+            <summary>
+            Wrapper for <see cref="M:System.String.IsNullOrEmpty(System.String)"/>, because it reads better to me as an extension method.
+            </summary>
+            <param name="s">The string to check.</param>
+            <returns><inheritdoc cref="M:System.String.IsNullOrEmpty(System.String)" path="/returns"/></returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.PrettyPrint(System.Object)">
+            <summary>
+            Prints an object in its entirety in relatively readable JSON format.
+            </summary>
+            <param name="obj">The object to print.</param>
+            <returns>A pretty-printed object.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.PrintNull(System.Object,System.String)">
+            <summary>
+            Represents an object in human-readable format, even if it's <see langword="null"/>.
+            </summary>
+            <param name="obj">The object or <see langword="null"/> value to represent.</param>
+            <param name="resultIfNull">The string to print if <c>obj</c> is null.</param>
+            <returns>A string which is either <c>obj.ToString()</c>, if <c>obj</c> is not <see langword="null"/>, or <c>ifNull</c> otherwise.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.Repeated(System.Char,System.Int32)">
+            <summary>
+            Repeats a character a specified number of times.
+            </summary>
+            <param name="c">The character to repeat.</param>
+            <param name="times">How many of the character should be produced.</param>
+            <returns>A string which is <c>times</c> instances of <c>c</c>.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.ToLower(System.Char)">
+            <summary>
+            Converts a character to lowercase. Wrapper for <see cref="M:System.Char.ToLower(System.Char)"/>, because it reads better to me as an extension method.
+            </summary>
+            <param name="c">The character to format.</param>
+            <returns><inheritdoc cref="M:System.Char.ToLower(System.Char)"/></returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.Without(System.String,System.Collections.Generic.IEnumerable{System.Char})">
+            <summary>Removes a set of characters from a string.</summary>
+            <param name="s">The string from which the characters will be removed.</param>
+            <param name="chars">The characters to be removed.</param>
+            <returns>A copy of <c>s</c> without any instances of the specified characters..</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.ToHex(System.Byte)">
+            <summary>
+            Converts a single <see langword="byte"/> to its hexadecimal equivalent.
+            </summary>
+            <param name="b">The <see langword="byte"/> to convert.</param>
+            <returns>The <see langword="byte"/>, formatted to hexadecimal as with <see cref="M:d9.utl.StringUtils.ToHex(System.Byte[])"/>.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.ToHex(System.Byte[])">
+            <summary>
+            Writes <see langword="byte"/>s in hexadecimal without separating them with hyphens.
+            </summary>
+            <param name="bytes">The <see langword="byte"/>s to convert.</param>
+            <returns>As described above.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.WithProgress``1(System.Collections.Generic.IEnumerable{``0},d9.utl.Log,System.Int32)">
+            <summary>
+            Enumerates over the specified enumerable and returns each element with its corresponding index.
+            </summary>
+            <typeparam name="T">The type of the elements to enumerate.</typeparam>
+            <param name="enumerable">The enumerable containing the elements to enumerate.</param>
+            <param name="log">The <see cref="T:d9.utl.Log"/> to write to. If not specified, uses <see cref="M:d9.utl.Utils.Log(System.Object)"/> instead.</param>
+            <param name="numberOfPrints">The total number of lines of progress which will be printed.</param>
+            <returns>The elements of the specified <c><paramref name="enumerable"/></c>, with their respective indices.</returns>
+        </member>
+        <member name="M:d9.utl.StringUtils.NaturalLanguageList``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            Prints the specified items as a list in natural English, with the specified conjunction.
+            </summary>
+            <param name="items">The items to print.</param>
+            <param name="conjunction">The conjunction at the end of the string, just before the last
+            item.</param>
+            <returns>The items in the list separated by commas as appropriate, with a conjunction
+                     between the last two items.</returns>
+            <remarks>Uses the Oxford comma, which is the correct way to write such lists.</remarks>
+        </member>
+        <member name="T:d9.utl.TimeUtils">
+            <summary>
+            Wibbly wobbly timey wimey stuff. Or whatever.
+            </summary>
+        </member>
+        <member name="M:d9.utl.TimeUtils.Ceiling(System.DateTime,System.Nullable{System.TimeSpan})">
+            <summary>
+            Gets the next <see cref="T:System.DateTime"/> divisible by the given <paramref name="span"/> after the 
+            <paramref name="date"/> specified. 
+            
+            For example, the ceiling of 12:01 with respect to 15-minute intervals is 12:15. 
+            </summary>
+            <remarks>Adapted from <see href="https://stackoverflow.com/a/1393726">here</see>.</remarks>
+            <param name="date">The <see cref="T:System.DateTime"/> whose ceiling to find.</param>
+            <param name="span">The time interval with respect to which the ceiling will be found.</param>
+            <returns>The ceiling of the specified time, as described above.</returns>
+        </member>
+        <member name="M:d9.utl.TimeUtils.Floor(System.DateTime,System.Nullable{System.TimeSpan})">
+            <summary>
+            Gets the previous <see cref="T:System.DateTime"/> divisible by the given <paramref name="span"/> after
+            the <paramref name="date"/> specified.
+            
+            For example, the floor of 12:14 with respect to 15-minute intervals is 12:00.
+            </summary>
+            <remarks>Adapted from <see href="https://stackoverflow.com/a/1393726">here</see>.</remarks>
+            <param name="date">The <see cref="T:System.DateTime"/> whose floor to find.</param>
+            <param name="span">The time interval with respect to which the floor will be found.</param>
+            <returns>The floor of the specified time, as described above.</returns>
+        </member>
+        <member name="M:d9.utl.TimeUtils.Round(System.DateTime,System.Nullable{System.TimeSpan})">
+            <summary>
+            Rounds the given <paramref name="date"/> to the nearest interval of duration <paramref name="span"/>.
+            
+            For example, when rounding with 15-minute intervals, 12:07 rounds to 12:00 whereas 12:08 rounds to 12:15.
+            </summary>
+            <param name="date">The <see cref="T:System.DateTime"/> to round.</param>
+            <param name="span">The <see cref="T:System.TimeSpan"/> to round to.</param>
+            <returns>The <see cref="T:System.DateTime"/> closest to the specified <paramref name="date"/> which is divisible by <paramref name="span"/>.</returns>
+        </member>
+        <member name="M:d9.utl.TimeUtils.Natural(System.TimeSpan)">
+            <summary>
+            Produces a natural-sounding string describing a specific timespan, for example "one day, two hours, three minutes, and 4.56 seconds".
+            </summary>
+            <param name="ts">The <see cref="T:System.TimeSpan"/> to describe.</param>
+            <returns>The time span described in natural English.</returns>
+        </member>
+        <member name="T:d9.utl.Utils">
+            <summary>
+            Miscellaneous utilities.
+            </summary>
+        </member>
+        <member name="P:d9.utl.Utils.DefaultLog">
+            <summary>
+            The default <see cref="T:d9.utl.Log"/> to print to when <see cref="M:d9.utl.Utils.Log(System.Object)"/> is used.
+            </summary>
+        </member>
+        <member name="F:d9.utl.Utils.DebugEnabled">
+            <summary>
+            Whether or not to perform debug prints.
+            </summary>
+        </member>
+        <member name="M:d9.utl.Utils.Log(System.Object)">
+            <summary>
+            Prints to the <see cref="P:d9.utl.Utils.DefaultLog">default log</see>, if it has been set, or the <see cref="T:System.Console"/> otherwise.
+            </summary>
+            <remarks>Uses <see cref="M:d9.utl.StringUtils.PrintNull(System.Object,System.String)"/>, and therefore produces a non-empty line if a <see langword="null"/> is passed in.</remarks>
+            <param name="obj">The object to write.</param>
+        </member>
+        <member name="M:d9.utl.Utils.DebugLog(System.Object)">
+            <summary>
+            <see cref="M:d9.utl.Utils.Log(System.Object)"/>s the given object if <see cref="F:d9.utl.Utils.DebugEnabled"/> is <see langword="true"/>. Otherwise, does nothing.
+            </summary>
+            <remarks><inheritdoc cref="M:d9.utl.Utils.Log(System.Object)" path="/remarks"/></remarks>
+            <param name="obj"><inheritdoc cref="M:d9.utl.Utils.Log(System.Object)" path="/param[@name='obj']"/></param>
+        </member>
+        <member name="M:d9.utl.Utils.Sieve``1(System.Func{``0,System.Boolean},``0,``0[])">
+            <summary>
+            Just a wrapper for Linq's <c>FirstOrDefault</c> which takes a <see langword="params"/> argument, making it more readable in
+            certain circumstances.
+            </summary>
+            <remarks>i honestly just wrote this for a meme.</remarks>
+            <typeparam name="T">The type of the objects to sieve.</typeparam>
+            <param name="lambda">The function which will sieve the objects. If it returns <see langword="true"/> for an object, the object is 
+            <see langword="return"/>ed and enumeration stops.</param>
+            <param name="default">The default value if no object causes the <c><paramref name="lambda"/></c> to return true.</param>
+            <param name="ts">The <typeparamref name="T"/>s to sieve.</param>
+            <returns>The first object satisfying <c><paramref name="lambda"/></c>, if any, or <c><paramref name="default"/></c> if none do.</returns>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.FlagMatcher_0">
+            <summary>Custom <see cref="T:System.Text.RegularExpressions.Regex"/>-derived type for the FlagMatcher method.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.FlagMatcher_0.Instance">
+            <summary>Cached, thread-safe singleton instance.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.FlagMatcher_0.#ctor">
+            <summary>Initializes the instance.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.FlagMatcher_0.RunnerFactory">
+            <summary>Provides a factory for creating <see cref="T:System.Text.RegularExpressions.RegexRunner"/> instances to be used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.FlagMatcher_0.RunnerFactory.CreateInstance">
+            <summary>Creates an instance of a <see cref="T:System.Text.RegularExpressions.RegexRunner"/> used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.FlagMatcher_0.RunnerFactory.Runner">
+            <summary>Provides the runner that contains the custom logic implementing the specified regular expression.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.FlagMatcher_0.RunnerFactory.Runner.Scan(System.ReadOnlySpan{System.Char})">
+            <summary>Scan the <paramref name="inputSpan"/> starting from base.runtextstart for the next match.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.FlagMatcher_0.RunnerFactory.Runner.TryFindNextPossibleStartingPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Search <paramref name="inputSpan"/> starting from base.runtextpos for the next location a match could possibly start.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if a possible match was found; false if no more matches are possible.</returns>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.FlagMatcher_0.RunnerFactory.Runner.TryMatchAtCurrentPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Determine whether <paramref name="inputSpan"/> at base.runtextpos is a match for the regular expression.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if the regular expression matches at the current position; otherwise, false.</returns>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.ArgMatcher_1">
+            <summary>Custom <see cref="T:System.Text.RegularExpressions.Regex"/>-derived type for the ArgMatcher method.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.ArgMatcher_1.Instance">
+            <summary>Cached, thread-safe singleton instance.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.ArgMatcher_1.#ctor">
+            <summary>Initializes the instance.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.ArgMatcher_1.RunnerFactory">
+            <summary>Provides a factory for creating <see cref="T:System.Text.RegularExpressions.RegexRunner"/> instances to be used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.ArgMatcher_1.RunnerFactory.CreateInstance">
+            <summary>Creates an instance of a <see cref="T:System.Text.RegularExpressions.RegexRunner"/> used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.ArgMatcher_1.RunnerFactory.Runner">
+            <summary>Provides the runner that contains the custom logic implementing the specified regular expression.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.ArgMatcher_1.RunnerFactory.Runner.Scan(System.ReadOnlySpan{System.Char})">
+            <summary>Scan the <paramref name="inputSpan"/> starting from base.runtextstart for the next match.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.ArgMatcher_1.RunnerFactory.Runner.TryFindNextPossibleStartingPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Search <paramref name="inputSpan"/> starting from base.runtextpos for the next location a match could possibly start.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if a possible match was found; false if no more matches are possible.</returns>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.ArgMatcher_1.RunnerFactory.Runner.TryMatchAtCurrentPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Determine whether <paramref name="inputSpan"/> at base.runtextpos is a match for the regular expression.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if the regular expression matches at the current position; otherwise, false.</returns>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.Utilities">
+            <summary>Helper methods used by generated <see cref="T:System.Text.RegularExpressions.Regex"/>-derived implementations.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_defaultTimeout">
+            <summary>Default timeout value set in <see cref="T:System.AppContext"/>, or <see cref="F:System.Text.RegularExpressions.Regex.InfiniteMatchTimeout"/> if none was set.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_hasTimeout">
+            <summary>Whether <see cref="F:System.Text.RegularExpressions.Generated.Utilities.s_defaultTimeout"/> is non-infinite.</summary>
+        </member>
+    </members>
+</doc>

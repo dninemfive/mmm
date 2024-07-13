@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "pcEPQRH71TBpedxfBxZ99n5RoSmqgBatyxXh0SRE2clyLj8DnwyTu6XNwhtD3mHhb1EiwcwO0XKY7P0xvD0FuA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\dninemfive\\Documents\\workspaces\\mods\\_meta\\d9.lcm\\d9.lcm.cli\\lcm.cli.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\dninemfive\\.nuget\\packages\\modrinth.net\\3.4.5\\modrinth.net.3.4.5.nupkg.sha512"
+  ],
+  "logs": []
+}
