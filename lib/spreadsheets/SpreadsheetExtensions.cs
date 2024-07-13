@@ -10,4 +10,5 @@ public static class SpreadsheetExtensions
     public static Spreadsheet<T> ToSpreadsheetWithDelimiter<T>(this IEnumerable<string> lines, string delimiter)
         where T : IParsableWithDelimiter<T>
         => Spreadsheet<T>.LoadUsingDelimiter<T>(lines, delimiter);
+
 }

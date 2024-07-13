@@ -16,4 +16,10 @@ public class MinecraftVersions
         => _dict[version];
     public DateTime ReleaseDateFor(string version)
         => this[version].Date;
+    public IEnumerable<GameVersion> Parse(IEnumerable<string> input)
+        => input.Select(x => this[x]);
+    public GameVersion MostRecent(IEnumerable<GameVersion> gameVersions)
+        => gameVersions.OrderBy(x => x.Date).Last();
+    public GameVersion MostRecentVersion(IEnumerable<string> input)
+        => MostRecent(Parse(input));
 }

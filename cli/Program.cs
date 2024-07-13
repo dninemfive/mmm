@@ -13,7 +13,9 @@ internal class Program
     {
         string basePath = @"C:\Users\dninemfive\Documents\workspaces\mods\_meta\d9.lcm";
         Spreadsheet<ModInputRow> data = File.ReadAllLines($@"{basePath}\moddata.tsv").ToSpreadsheetWithDelimiter<ModInputRow>("\t");
-        using FileStream fs = File.OpenWrite($@"{basePath}\output.txt");
+        string outputPath = $@"{basePath}\output.tsv";
+        File.WriteAllText(outputPath, "");
+        using FileStream fs = File.OpenWrite(outputPath);
         using StreamWriter sw = new(fs);
         ModrinthClientConfig mcc = new()
         {
@@ -23,37 +25,14 @@ internal class Program
         MinecraftVersions = await MinecraftVersions.DownloadUsing(client);
         int updatedCount = 0;
         double totalCount = 0;
+        Func<ModInputRow, Task<ModOutputRow>> tf = ModOutputRow.TransformFunction(client, MinecraftVersions);
         foreach (ModInputRow row in data)
         {
             if (row.Decision < Decision.Considering)
                 continue;
             totalCount++;
-            Match match = ModrinthUtils.ModrinthRegex.Match(row.ModUrl);
-            if(match.Success && match.Groups.Values.Any() && match.Groups
-                                                                  .Values
-                                                                  .Skip(1)
-                                                                  .First()
-                                                                  .Value is string slug)
-            {
-                try
-                {
-                    Project project = await client.Project.GetAsync(slug);
-                    string lastVersion = project.GameVersions.OrderBy(x => MinecraftVersions[x].Date).Last();
-                    bool upToDate = lastVersion == "1.21";
-                    if (upToDate)
-                        updatedCount++;
-                    string summary = $"{project.Title,-64}\t{lastVersion,8}\t{(upToDate ? "TRUE" : "")}";
-                    Print(summary);
-                }
-                catch (Exception e)
-                {
-                    Print($"{e.GetType().Name}: {e.Message}");
-                }
-            }
-            else
-            {
-                Print($"{row.ModName,-64}\t{row.ModUrl}");
-            }
+            ModOutputRow mor = await tf(row);
+            Print(mor.ToDelimitedRow("\t"), sw);
         }
         Console.WriteLine($"\nUpdated percentage: {updatedCount / totalCount:P2}");
     }

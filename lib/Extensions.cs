@@ -13,4 +13,7 @@ public static class Extensions
         => items.InColumns(Enumerable.Repeat(width, items.Count()));
     public static Decision ParseDecision(this string s)
         => Enum.Parse<Decision>(s.Replace(" ", ""));
+    // todo: move to utl
+    public static string JoinWithDelimiter(this IEnumerable<string> strings, string delimiter)
+        => strings.Aggregate((x, y) => $"{x}{delimiter}{y}");
 }
