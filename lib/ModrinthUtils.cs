@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ModVersion = Modrinth.Models.Version;
 
-namespace d9.lcm.gui;
+namespace d9.lcm;
 public static partial class ModrinthUtils
 {
     public static ModrinthClient Client { get; set; } = new(new ModrinthClientConfig()

@@ -1,4 +1,4 @@
-﻿namespace d9.lcm.gui;
+﻿namespace d9.lcm;
 public enum Decision
 {
     LockedIn,
