@@ -29,15 +29,8 @@ public partial class MainWindow : Window
             UserAgent = "dninemfive-lcm/0.0.0"
         };
         using ModrinthClient client = new(mcc);
-        List<GameVersion> projects = new();
+        List<Project> projects = new();
         ModList.ItemsSource = projects;
-        IEnumerable<GameVersion> versions = await client.Tag.GetGameVersionsAsync();
-        foreach (GameVersion gv in versions)
-        {
-            projects.Add(gv);
-        }
-        projects = projects.OrderByDescending(x => x.Date).ToList();
-        /*
         foreach (string row in rows)
         {
             try
@@ -48,12 +41,12 @@ public partial class MainWindow : Window
                 Print(summary);
                 projects.Add(project);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 sw.WriteLine(e);
                 Print(e);
             }
-        }*/
+        }
     }
     public void Print(object? obj)
     {
