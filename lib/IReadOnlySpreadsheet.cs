@@ -7,49 +7,36 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace d9.lcm;
-public interface IReadOnlySpreadsheet<TRow>
+public interface IParsableWithDelimiter<TSelf>
+{
+    public static abstract TSelf Parse(string line, string delimiter);
+}
+public class ModDataRow
+    : IParsableWithDelimiter<ModDataRow>
+{
+    public readonly string ModName, ModUrl;
+    public readonly Decision Decision;
+    public ModDataRow(string line, string delimiter)
+    {
+        string[] split = line.Split(delimiter);
+        if (split.Length < 3)
+            throw new ArgumentException($"Not enough values in line `{line}` when split by delimiter `{delimiter}`!", nameof(line));
+        ModName = split[0];
+        ModUrl = split[1];
+        Decision = split[2].ParseDecision();
+    }
+    public static ModDataRow Parse(string line, string delimiter)
+        => new(line, delimiter);
+}
+public class DelimitedSpreadsheet<TRow>(string[] lines, string delimiter)
     : IEnumerable<TRow>
-    where TRow : IReadOnlySpreadsheetRow<TRow>
+    where TRow : IParsableWithDelimiter<TRow>
 {
-    public TRow this[int index] { get; }
-    public object? this[int row, string column] => this[row][column];
-}
-public interface IReadOnlySpreadsheetRow<TSelf>
-{
-    public object? this[string column] { get; }
-}
-public abstract class AutoRow : IReadOnlySpreadsheetRow<AutoRow>
-{
-    private readonly Dictionary<string, FieldInfo> _columns = new();
-    public object? this[string column]
-    {
-        get
-        {
-            if(_columns.TryGetValue(column, out FieldInfo? field))
-            {
-                return field.GetValue(this);
-            }
-            field = GetType().GetField(column);
-            if(field is not null)
-            {
-                _columns[column] = field;
-                return field.GetValue(this);
-            }
-            return null;
-        }
-    }
-}
-public class DelimitedSpreadsheet<TRow>
-    : IReadOnlySpreadsheet<TRow>
-    where TRow : IReadOnlySpreadsheetRow<TRow>
-{
-    public TRow this[int index] => throw new NotImplementedException();
+    private List<TRow> _rows = lines.Select(x => TRow.Parse(x, delimiter)).ToList();
+    public TRow this[int index] => _rows[index];
+    public int RowCount => _rows.Count;
     public IEnumerator<TRow> GetEnumerator()
-    {
-        throw new NotImplementedException();
-    }
+        => ((IEnumerable<TRow>)_rows).GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator()
-    {
-        throw new NotImplementedException();
-    }
+        => ((IEnumerable)_rows).GetEnumerator();
 }

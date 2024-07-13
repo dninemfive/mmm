@@ -12,7 +12,7 @@ internal class Program
     private static async Task Main(string[] args)
     {
         string basePath = @"C:\Users\dninemfive\Documents\workspaces\mods\_meta\d9.lcm";
-        string[] rows = File.ReadAllLines($@"{basePath}\examplemods.txt");
+        DelimitedSpreadsheet<ModDataRow> data = new(File.ReadAllLines($@"{basePath}\moddata.tsv"), "\t");
         using FileStream fs = File.OpenWrite($@"{basePath}\output.txt");
         using StreamWriter sw = new(fs);
         ModrinthClientConfig mcc = new()
@@ -22,9 +22,13 @@ internal class Program
         using ModrinthClient client = new(mcc);
         MinecraftVersions = await MinecraftVersions.DownloadUsing(client);
         int updatedCount = 0;
-        foreach (string row in rows)
+        double totalCount = 0;
+        foreach (ModDataRow row in data)
         {
-            Match match = ModrinthUtils.ModrinthRegex.Match(row);
+            if (row.Decision < Decision.Considering)
+                continue;
+            totalCount++;
+            Match match = ModrinthUtils.ModrinthRegex.Match(row.ModUrl);
             if(match.Success && match.Groups.Values.Any() && match.Groups
                                                                   .Values
                                                                   .Skip(1)
@@ -48,10 +52,10 @@ internal class Program
             }
             else
             {
-                Print(row);
+                Print($"{row.ModName,-64}\t{row.ModUrl}");
             }
         }
-        Console.WriteLine($"\nUpdated percentage: {updatedCount / (double)rows.Length:P2}");
+        Console.WriteLine($"\nUpdated percentage: {updatedCount / totalCount:P2}");
     }
     private static void Print(object? obj, StreamWriter? sw = null)
     {
