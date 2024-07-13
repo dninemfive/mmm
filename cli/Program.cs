@@ -2,9 +2,12 @@
 using Modrinth.Models;
 using d9.utl;
 using File = System.IO.File;
+using d9.lcm;
+using System.Text.RegularExpressions;
 
 internal class Program
 {
+    public static MinecraftVersions? MinecraftVersions { get; private set; }
     private static async Task Main(string[] args)
     {
         string basePath = @"C:\Users\dninemfive\Documents\workspaces\mods\_meta\d9.lcm";
@@ -16,18 +19,26 @@ internal class Program
             UserAgent = "dninemfive-lcm/0.0.0"
         };
         using ModrinthClient client = new(mcc);
-
+        MinecraftVersions = await MinecraftVersions.DownloadUsing(client);
         foreach (string row in rows)
         {
-            try
+            Match match = ModrinthUtils.ModrinthRegex.Match(row);
+            if(match.Success && match.Groups.Values.Any() && match.Groups.Values.Skip(1).First().Value is string slug)
             {
-                Project project = await client.Project.GetAsync(row.Split("/").Last());
-                string summary = $"{project.Title}\t{project.GameVersions.ListNotation(brackets: null)}";
-                Print(summary);
+                try
+                {
+                    Project project = await client.Project.GetAsync(slug);
+                    string summary = $"{project.Title,-64}\t{project.GameVersions.Where(x => MinecraftVersions[x].Major).InColumnsOfWidth(10)}";
+                    Print(summary);
+                }
+                catch (Exception e)
+                {
+                    Print($"{e.GetType().Name}: {e.Message}");
+                }
             }
-            catch (Exception e)
+            else
             {
-                Print($"{e.GetType().Name}: {e.Message}");
+                Print(row);
             }
         }
     }
