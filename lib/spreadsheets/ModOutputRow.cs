@@ -5,11 +5,12 @@ using d9.utl;
 
 namespace d9.lcm;
 public record ModOutputRow(string Name, string ModUrl, Decision Decision, string[]? Categories, GameVersion? MostRecentVersion)
+    : IWritableWithDelimiter
 {
     public static Func<ModInputRow, Task<ModOutputRow>> TransformFunction(ModrinthClient client, MinecraftVersions mvs)
         => async (ModInputRow mir) =>
         {
-            ModOutputRow defaultValue(ModInputRow mir)
+            static ModOutputRow defaultValue(ModInputRow mir)
                 => new(mir.ModName, mir.ModUrl, mir.Decision, null, null);
             if (mir.ModUrl.TryGetSlug(out string? slug))
             {
@@ -25,7 +26,7 @@ public record ModOutputRow(string Name, string ModUrl, Decision Decision, string
             }
             return defaultValue(mir);
         };
-    public string ToDelimitedRow(string delimiter)
+    public string ToLine(string delimiter)
     {
         string[] items = [
             Name,

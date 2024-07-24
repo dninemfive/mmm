@@ -12,8 +12,6 @@ public class Spreadsheet<TRow>(IEnumerable<TRow>? rows = null)
     IEnumerator IEnumerable.GetEnumerator()
         => ((IEnumerable)_rows).GetEnumerator();
     public static Spreadsheet<T> LoadUsingDelimiter<T>(IEnumerable<string> lines, string delimiter)
-        where T : ISerializableUsingDelimiter<T>
-        => new(lines.Select(x => T.FromLine(x, delimiter)));
-    public static Spreadsheet<U> Transform<T, U>(Spreadsheet<T> input, Func<T, U> transform)
-        => new(input.Select(x => transform(x)));
+        where T : IParsableWithDelimiter<T>
+        => new(lines.Select(x => T.Parse(x, delimiter)));
 }

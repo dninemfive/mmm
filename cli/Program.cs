@@ -32,7 +32,7 @@ internal class Program
                 continue;
             totalCount++;
             ModOutputRow mor = await tf(row);
-            Print(mor.ToDelimitedRow("\t"), sw);
+            Print(mor.ToLine("\t"), sw);
         }
         Console.WriteLine($"\nUpdated percentage: {updatedCount / totalCount:P2}");
     }
