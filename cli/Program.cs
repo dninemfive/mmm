@@ -12,7 +12,7 @@ internal class Program
     private static async Task Main(string[] args)
     {
         string basePath = @"C:\Users\dninemfive\Documents\workspaces\mods\_meta\d9.lcm";
-        Spreadsheet<ModInputRow> data = File.ReadAllLines($@"{basePath}\moddata.tsv").ToSpreadsheetWithDelimiter<ModInputRow>("\t");
+        Spreadsheet<ModInputRow> data = File.ReadAllLines($@"{basePath}\moddata.tsv").LoadSpreadsheetWithDelimiter<ModInputRow>("\t");
         string outputPath = $@"{basePath}\output.tsv";
         File.WriteAllText(outputPath, "");
         using FileStream fs = File.OpenWrite(outputPath);

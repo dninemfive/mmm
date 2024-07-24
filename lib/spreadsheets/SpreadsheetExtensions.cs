@@ -9,8 +9,8 @@ using d9.utl;
 namespace d9.lcm;
 public static class SpreadsheetExtensions
 {
-    public static Spreadsheet<T> ToSpreadsheetWithDelimiter<T>(this IEnumerable<string> lines, string delimiter)
-        where T : IParsableWithDelimiter<T>
+    public static Spreadsheet<T> LoadSpreadsheetWithDelimiter<T>(this IEnumerable<string> lines, string delimiter)
+        where T : ISerializableUsingDelimiter<T>
         => Spreadsheet<T>.LoadUsingDelimiter<T>(lines, delimiter);
     public static string ToSpreadsheetRow(this object obj, string delimiter)
     {
