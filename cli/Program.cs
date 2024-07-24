@@ -32,6 +32,8 @@ internal class Program
                 continue;
             totalCount++;
             ModOutputRow mor = await tf(row);
+            if (mor.MostRecentVersion == MinecraftVersions["1.21"])
+                updatedCount++;
             Print(mor.ToLine("\t"), sw);
         }
         Console.WriteLine($"\nUpdated percentage: {updatedCount / totalCount:P2}");
