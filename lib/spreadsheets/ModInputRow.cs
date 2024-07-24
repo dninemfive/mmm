@@ -1,4 +1,5 @@
 ﻿namespace d9.lcm;
+[ColumnOrder(nameof(ModName), nameof(ModUrl), nameof(Decision))]
 public class ModInputRow
     : ISerializableUsingDelimiter<ModInputRow>
 {
