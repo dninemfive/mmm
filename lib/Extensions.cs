@@ -16,4 +16,11 @@ public static class Extensions
     // todo: move to utl
     public static string JoinWithDelimiter(this IEnumerable<string> strings, string delimiter)
         => strings.Aggregate((x, y) => $"{x}{delimiter}{y}");
+    // todo: move to utl
+    public static IEnumerable<(int i, T value)> WithIndices<T>(this IEnumerable<T> enumerable)
+    {
+        int i = 0;
+        foreach (T item in enumerable)
+            yield return (i++, item);
+    }
 }

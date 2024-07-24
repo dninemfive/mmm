@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 
 namespace d9.lcm;
-public class Spreadsheet<TRow>(IEnumerable<TRow>? rows = null)
+public class Spreadsheet<TRow>(SpreadsheetColumnsDef columns, IEnumerable<TRow>? rows = null)
     : IEnumerable<TRow>
 {
     private List<TRow> _rows = rows is not null ? rows.ToList() : new();
