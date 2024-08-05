@@ -23,20 +23,17 @@ internal class Program
         };
         using ModrinthClient client = new(mcc);
         MinecraftVersions = await MinecraftVersions.DownloadUsing(client);
-        int updatedCount = 0;
-        double totalCount = 0;
         Func<ModInputRow, Task<ModOutputRow>> tf = ModOutputRow.TransformFunction(client, MinecraftVersions);
+        List<ModOutputRow> modData = [];
         foreach (ModInputRow row in data)
         {
-            if (row.Decision < Decision.Considering)
+            if (row.Decision < Decision.Active)
                 continue;
-            totalCount++;
             ModOutputRow mor = await tf(row);
-            if (mor.MostRecentVersion == MinecraftVersions["1.21"])
-                updatedCount++;
+            modData.Add(mor);
             Print(mor.ToLine("\t"), sw);
         }
-        Console.WriteLine($"\nUpdated percentage: {updatedCount / totalCount:P2}");
+        Console.WriteLine($"\nUpdated percentage: {modData.Select(x => x.MostRecentVersion).EvaluateTernary(x => x == MinecraftVersions["1.21"]).ProportionTrue()}");
     }
     private static void Print(object? obj, StreamWriter? sw = null)
     {

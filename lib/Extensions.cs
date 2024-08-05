@@ -23,4 +23,25 @@ public static class Extensions
         foreach (T item in enumerable)
             yield return (i++, item);
     }
+    public static ProportionRange ProportionTrue(this IEnumerable<bool?> truthValues)
+    {
+        double total = truthValues.Count(),
+               @true = truthValues.Count(x => x is true),
+               @null = truthValues.Count(x => x is null);
+        return (@true / total, (@true + @null) / total);
+    }
+    public static IEnumerable<bool?> EvaluateTernary<T>(this IEnumerable<T?> values, Func<T, bool> predicate)
+    {
+        foreach(T? value in values)
+        {
+            if(value is not null)
+            {
+                yield return predicate(value);
+            } 
+            else
+            {
+                yield return null;
+            }
+        }
+    }
 }

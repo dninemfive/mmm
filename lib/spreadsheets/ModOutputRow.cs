@@ -35,6 +35,6 @@ public record ModOutputRow(string Name, string ModUrl, Decision Decision, string
             Categories?.ListNotation(brackets: null).PrintNull()!,
             MostRecentVersion?.Version.PrintNull()!
         ];
-        return items.JoinWithDelimiter(delimiter);
+        return items.InColumns([24, 64, 8, 32, 8], delimiter, true);
     }     
 }
