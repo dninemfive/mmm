@@ -22,4 +22,14 @@ public class MinecraftVersions
         => gameVersions.OrderBy(x => x.Date).Last();
     public GameVersion MostRecentVersion(IEnumerable<string> input)
         => MostRecent(Parse(input));
+    private IEnumerable<GameVersion> _versionsWhere(Func<GameVersion, bool> predicate)
+        => _dict.Values.Where(predicate);
+    public IEnumerable<GameVersion> VersionsWhere(Func<GameVersion, bool> predicate)
+        => _versionsWhere(predicate).Order();
+    public IEnumerable<GameVersion> VersionsSince(GameVersion version)
+        => VersionsWhere(x => x.Date > version.Date);
+    public IEnumerable<GameVersion> MajorVersionsSince(GameVersion version)
+        => VersionsWhere(x => x.Major && x.Date > version.Date);
+    public IEnumerable<GameVersion> MajorVersionsSince(string version)
+        => VersionsWhere(x => x.Major && x.Date > _dict[version].Date);
 }

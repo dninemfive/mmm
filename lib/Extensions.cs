@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using d9.utl;
+using Modrinth.Models;
+using Version = Modrinth.Models.Version;
 
 namespace d9.lcm;
 public static class Extensions
