@@ -9,4 +9,6 @@ namespace d9.lcm;
 public class CachedProject(Project project)
 {
     public Project Project = project;
+    public async Task<CachedProject> FromSlug(string slug)
+        => await Modrinth.Models.
 }
