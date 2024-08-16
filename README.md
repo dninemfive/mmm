@@ -1,2 +1,2 @@
 # mmm
-Minecraft Mod Manager
+Minecraft Mod Manager, to automate keeping modpacks updated, do analysis on how reliably and quickly mods update for major versions, and stuff like that. Extensively uses the Modrinth API; the CurseForge API appears to be restricted so i might end up scraping data from that but Modrinth is preferable anyway.
