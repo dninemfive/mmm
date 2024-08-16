@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using d9.utl;
 
-namespace d9.lcm;
+namespace d9.mmm;
 public static class SpreadsheetExtensions
 {
     public static Spreadsheet<T> LoadSpreadsheetWithDelimiter<T>(this IEnumerable<string> lines, string delimiter)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Modrinth;
 using Modrinth.Models;
 
-namespace d9.lcm;
+namespace d9.mmm;
 public record ModId(string? ModrinthSlug, string? CurseforgeUrl)
 {
     public string Key => ModrinthSlug 

@@ -2,7 +2,7 @@
 using Modrinth.Models.Enums.Version;
 using ModVersion = Modrinth.Models.Version;
 
-namespace d9.lcm;
+namespace d9.mmm;
 public record Modpack(string Name, string Loader, IEnumerable<string> ModUrls)
 {
 

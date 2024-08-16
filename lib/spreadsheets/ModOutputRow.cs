@@ -3,7 +3,7 @@ using Modrinth.Models;
 using Modrinth.Models.Tags;
 using d9.utl;
 
-namespace d9.lcm;
+namespace d9.mmm;
 public record ModOutputRow(string Name, string ModUrl, Decision Decision, string[]? Categories, GameVersion? MostRecentVersion)
     : IWritableWithDelimiter
 {

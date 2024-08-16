@@ -1,7 +1,7 @@
 ﻿using Modrinth;
 using Modrinth.Models.Tags;
 
-namespace d9.lcm;
+namespace d9.mmm;
 public class MinecraftVersions
 {
     private Dictionary<string, GameVersion> _dict = new();

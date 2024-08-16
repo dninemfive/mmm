@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace d9.lcm;
+namespace d9.mmm;
 public readonly struct ProportionRange(double min, double max)
 {
     public readonly double Minimum = min, Maximum = max;

@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using File = System.IO.File;
 
-namespace d9.lcm;
+namespace d9.mmm;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>

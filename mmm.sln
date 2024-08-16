@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34219.65
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lcm.gui", "gui\lcm.gui.csproj", "{7C3B9BF3-AD82-4F41-9BD3-5AFA643EB83C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mmm.gui", "gui\mmm.gui.csproj", "{7C3B9BF3-AD82-4F41-9BD3-5AFA643EB83C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lcm.cli", "cli\lcm.cli.csproj", "{E9106E83-FC95-4B94-8248-41985F8EB6B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mmm.cli", "cli\mmm.cli.csproj", "{E9106E83-FC95-4B94-8248-41985F8EB6B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lcm", "lib\lcm.csproj", "{7E718000-C2AA-4D97-A2D2-E7362013240A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mmm", "lib\mmm.csproj", "{7E718000-C2AA-4D97-A2D2-E7362013240A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

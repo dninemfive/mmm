@@ -1,25 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <RootNamespace>d9.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Decider" Version="1.0.5" />
     <PackageReference Include="Modrinth.Net" Version="3.4.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\lib\lcm.csproj" />
+    <ProjectReference Include="..\lib\mmm.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="utl">
-      <HintPath>..\..\..\..\misc\utl\bin\Release\net8.0\utl.dll</HintPath>
+      <HintPath>..\..\..\..\misc\utl\bin\Release\net7.0\utl.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace d9.lcm;
+namespace d9.mmm;
 public class Spreadsheet<TRow>(IEnumerable<TRow>? rows = null)
     : IEnumerable<TRow>
 {

@@ -1,4 +1,4 @@
-﻿namespace d9.lcm;
+﻿namespace d9.mmm;
 public class ModInputRow
     : IParsableWithDelimiter<ModInputRow>
 {

@@ -7,7 +7,7 @@ using d9.utl;
 using Modrinth.Models;
 using Version = Modrinth.Models.Version;
 
-namespace d9.lcm;
+namespace d9.mmm;
 public static class Extensions
 {
     // todo: move to utl
